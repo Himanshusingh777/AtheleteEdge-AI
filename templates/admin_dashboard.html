@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SwasthaAI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        
+        .logo .health-accent {
+            color: #a7f3d0;
+        }
+        
+        .admin-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .admin-badge::before {
+            content: '⚡';
+            margin-right: 8px;
+        }
+        
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .dashboard-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .dashboard-content {
+            padding: 40px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            border-radius: 2px;
+        }
+        
+        .form-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 40px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+        
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        input[type="file"] {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 14px 16px;
+            background: white;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .file-input-label:hover {
+            border-color: #1e3c72;
+            background: #f8fafc;
+            color: #1e3c72;
+        }
+        
+        .file-input-label::before {
+            content: '📁 ';
+            margin-right: 8px;
+        }
+        
+        .specialty-input {
+            position: relative;
+        }
+        
+        .specialty-input::after {
+            content: '🏥';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 18px;
+        }
+        
+        .degree-input {
+            position: relative;
+        }
+        
+        .degree-input::after {
+            content: '🎓';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 18px;
+        }
+        
+        .experience-input {
+            position: relative;
+        }
+        
+        .experience-input::after {
+            content: '📊';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 18px;
+        }
+        
+        input[type="submit"] {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: 16px;
+        }
+        
+        input[type="submit"]:hover {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(30, 60, 114, 0.3);
+        }
+        
+        input[type="submit"]:active {
+            transform: translateY(0);
+        }
+        
+        .doctor-list-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 32px;
+            margin-top: 32px;
+        }
+        
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .list-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .doctor-count {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #93c5fd;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        .empty-state::before {
+            content: '👨‍⚕️';
+            display: block;
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .security-notice {
+            margin-top: 32px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #92400e;
+        }
+        
+        .security-notice strong {
+            color: #78350f;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+            
+            .dashboard-header {
+                padding: 24px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .dashboard-content {
+                padding: 24px;
+            }
+            
+            .form-container {
+                padding: 24px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .dashboard-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div>
+                        <div class="logo">Swastha<span class="health-accent">AI</span></div>
+                        <div class="dashboard-title">Admin Dashboard</div>
+                        <div class="dashboard-subtitle">Healthcare Provider Management System</div>
+                    </div>
+                </div>
+                <div class="admin-badge">Administrator</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <h2 class="section-title">Add New Doctor</h2>
+            
+            <div class="form-container">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Doctor Name</label>
+                            <input type="text" name="name" id="name" placeholder="Enter doctor's full name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="degree">Medical Degree</label>
+                            <div class="degree-input">
+                                <input type="text" name="degree" id="degree" placeholder="e.g., MBBS, MD, MS" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="experience">Experience (Years)</label>
+                            <div class="experience-input">
+                                <input type="text" name="experience" id="experience" placeholder="Years of practice" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="speciality">Medical Speciality</label>
+                            <div class="specialty-input">
+                                <input type="text" name="speciality" id="speciality" placeholder="e.g., Cardiology, Neurology" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profile_pic">Profile Picture</label>
+                            <div class="file-input-container">
+                                <input type="file" name="profile_pic" id="profile_pic" accept="image/*">
+                                <label for="profile_pic" class="file-input-label">
+                                    Choose Profile Picture
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Login Password</label>
+                            <input type="password" name="password" id="password" placeholder="Create secure password" required>
+                        </div>
+                    </div>
+                    
+                    <input type="submit" value="Add Doctor">
+                </form>
+            </div>
+            
+            <div class="doctor-list-section">
+                <div class="list-header">
+                    <h3 class="list-title">Registered Doctors</h3>
+                    <div class="doctor-count">0 Doctors</div>
+                </div>
+                
+                <div class="empty-state">
+                    <p>No doctors registered yet. Add your first healthcare provider above.</p>
+                </div>
+            </div>
+            
+            <div class="security-notice">
+                <strong>Security Notice:</strong> All doctor credentials are encrypted and stored securely. Profile pictures are automatically optimized and stored in compliance with healthcare data protection standards.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

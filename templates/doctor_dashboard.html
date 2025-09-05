@@ -1,0 +1,26 @@
+<!-- templates/doctor_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">Welcome, Doctor</h1>
+        <h2 class="text-xl font-semibold mb-4">Patients Who Messaged You</h2>
+
+        {% for pid in patient_list %}
+        <div class="bg-white shadow-md p-4 mb-4 rounded-lg">
+            <p class="text-md">Patient ID: <span class="font-semibold">{{ pid }}</span></p>
+            <form method="POST" action="/chat/reply/{{ pid }}" class="mt-2 flex gap-2">
+                <input type="text" name="message" placeholder="Type reply" class="border border-gray-300 rounded px-3 py-1 w-full">
+                <button type="submit" class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600">Reply</button>
+<a href="/chat/{{ doctor_id }}/{{ pid }}" class="text-blue-500 text-sm underline">View Chat</a>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

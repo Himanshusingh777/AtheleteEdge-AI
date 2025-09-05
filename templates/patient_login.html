@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login/Register - SwasthaAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #2196F3, #FF9800, #E91E63);
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .logo .health-accent {
+            color: #667eea;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .patient-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ffcc02;
+        }
+        
+        .patient-badge::before {
+            content: '👤';
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .patient-badge span {
+            color: #f57c00;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 24px;
+            position: relative;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 16px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .patient-id-input {
+            position: relative;
+        }
+        
+        .patient-id-input::before {
+            content: 'P-';
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-weight: 500;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .patient-id-input input {
+            padding-left: 40px;
+        }
+        
+        .gender-input {
+            position: relative;
+        }
+        
+        .gender-hint {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #bdc3c7;
+            font-size: 12px;
+            pointer-events: none;
+        }
+        
+        input[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        
+        input[type="submit"]:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        input[type="submit"]:active {
+            transform: translateY(0);
+        }
+        
+        .info-notice {
+            margin-top: 25px;
+            padding: 15px;
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2e7d32;
+        }
+        
+        .info-notice strong {
+            color: #1b5e20;
+        }
+        
+        .dual-action-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f3e5f5, #fce4ec);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #6a1b9a;
+            text-align: center;
+            border: 1px solid #e1bee7;
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 25px;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+        
+        .patient-pattern {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="patient-pattern"></div>
+        
+        <div class="logo-section">
+            <div class="logo">Swastha<span class="health-accent">AI</span></div>
+            <div class="subtitle">Healthcare Management System</div>
+            <div class="patient-badge">
+                <span>Patient Portal</span>
+            </div>
+        </div>
+        
+        <h2>Patient Login/Register</h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="id">Patient ID</label>
+                <div class="patient-id-input">
+                    <input type="text" name="id" id="id" placeholder="Enter your Patient ID">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="text" name="age" id="age" placeholder="Age">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <div class="gender-input">
+                        <input type="text" name="gender" id="gender" placeholder="M/F/Other">
+                        <div class="gender-hint">M/F/Other</div>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="submit" value="Login / Register">
+        </form>
+        
+        <div class="dual-action-info">
+            <strong>New Patient?</strong> Fill all fields to register • <strong>Existing Patient?</strong> Enter Patient ID only
+        </div>
+        
+        <div class="info-notice">
+            <strong>Privacy Protected:</strong> Your personal health information is secure and HIPAA compliant. We never share your data without your consent.
+        </div>
+        
+        <div class="footer-text">
+            © 2025 SwasthaAI Healthcare Solutions | Patient Care Portal
+        </div>
+    </div>
+</body>
+</html>

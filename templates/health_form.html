@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SwasthaAI - Health Analyzer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+        
+        body { 
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            padding: 10px; 
+            background: 
+                linear-gradient(135deg, rgba(15, 32, 39, 0.95) 0%, rgba(32, 58, 67, 0.95) 50%, rgba(44, 83, 100, 0.95) 100%), 
+                radial-gradient(ellipse at top, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            background-size: cover, cover, 50px 50px;
+            background-attachment: fixed;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* AI-themed background elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 60%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1800px;
+            width: 95%;
+            max-height: 95vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .ai-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .ai-icon i {
+            font-size: 18px;
+            color: white;
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 0.9em;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .form-container {
+            padding: 20px 30px;
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.8) 0%, rgba(255, 255, 255, 0.9) 100%);
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 
+                0 2px 10px rgba(0, 0, 0, 0.05),
+                0 0 0 1px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(59, 130, 246, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8) bottom / 60px 2px no-repeat;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #1e293b;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .field-icon {
+            width: 14px;
+            height: 14px;
+            color: #64748b;
+        }
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            background: rgba(248, 250, 252, 0.5);
+            font-family: 'Inter', sans-serif;
+            min-height: 38px;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 
+                0 0 0 4px rgba(59, 130, 246, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
+        }
+
+        input[type="text"]:hover, input[type="number"]:hover {
+            border-color: #94a3b8;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .submit-container {
+            grid-column: 1 / -1;
+            margin-top: 15px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .report-section {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            padding: 40px;
+            border-top: 1px solid rgba(34, 197, 94, 0.1);
+            text-align: center;
+        }
+        
+        .report-success {
+            color: #059669;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+        }
+        
+        .download-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.4);
+            background: linear-gradient(135deg, #047857 0%, #059669 100%);
+        }
+        
+        .required {
+            color: #ef4444;
+        }
+
+        /* AI-themed decorative elements */
+        .ai-grid {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 1100px) {
+            .form-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                width: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .form-container {
+                padding: 15px 20px;
+            }
+
+            .form-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .form-section {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .section-title {
+                font-size: 1em;
+            }
+
+            input[type="text"], input[type="number"] {
+                padding: 12px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .ai-icon {
+                width: 30px;
+                height: 30px;
+            }
+
+            .ai-icon i {
+                font-size: 16px;
+            }
+
+            .header p {
+                font-size: 0.8em;
+            }
+        }
+
+        /* Loading animation for submit button */
+        .loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="ai-grid pulse">
+                <i class="fas fa-brain" style="color: rgba(59, 130, 246, 0.7);"></i>
+            </div>
+            <div class="header-content">
+                <h1>
+                    <div class="ai-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    SwasthaAI
+                </h1>
+                <p>
+                    <i class="fas fa-stethoscope"></i>
+                    Comprehensive AI-Powered Health Report Generator
+                </p>
+            </div>
+        </div>
+        
+        <div class="form-container">
+            <form method="POST">
+                <div class="form-content">
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            Personal Information
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-id-card field-icon"></i>
+                                Full Name <span class="required">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="age">
+                                    <i class="fas fa-calendar-alt field-icon"></i>
+                                    Age <span class="required">*</span>
+                                </label>
+                                <input type="number" id="age" name="age" required placeholder="Enter age">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender">
+                                    <i class="fas fa-venus-mars field-icon"></i>
+                                    Gender <span class="required">*</span>
+                                </label>
+                                <input type="text" id="gender" name="gender" placeholder="M/F/Other" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-ruler"></i>
+                            </div>
+                            Physical Measurements
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="height_cm">
+                                    <i class="fas fa-arrows-alt-v field-icon"></i>
+                                    Height (cm) <span class="required">*</span>
+                                </label>
+                                <input type="number" id="height_cm" name="height_cm" required placeholder="e.g., 170">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="weight_kg">
+                                    <i class="fas fa-weight field-icon"></i>
+                                    Weight (kg) <span class="required">*</span>
+                                </label>
+                                <input type="number" id="weight_kg" name="weight_kg" required placeholder="e.g., 70">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="section-title">
+                            <div class="section-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            Vital Signs & Lab Results
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bp_systolic">
+                                    <i class="fas fa-tachometer-alt field-icon"></i>
+                                    Systolic BP <span class="required">*</span>
+                                </label>
+                                <input type="number" id="bp_systolic" name="bp_systolic" required placeholder="e.g., 120">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bp_diastolic">
+                                    <i class="fas fa-tachometer-alt field-icon"></i>
+                                    Diastolic BP <span class="required">*</span>
+                                </label>
+                                <input type="number" id="bp_diastolic" name="bp_diastolic" required placeholder="e.g., 80">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sugar_fasting">
+                                <i class="fas fa-vial field-icon"></i>
+                                Fasting Blood Sugar (mg/dL) <span class="required">*</span>
+                            </label>
+                            <input type="number" id="sugar_fasting" name="sugar_fasting" required placeholder="e.g., 90">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sugar_post">
+                                <i class="fas fa-vial field-icon"></i>
+                                Post-Meal Blood Sugar (mg/dL)
+                            </label>
+                            <input type="number" id="sugar_post" name="sugar_post" placeholder="e.g., 140 (optional)">
+                        </div>
+
+                         
+                        
+                        <div class="form-group">
+                            <label for="cholesterol">
+                                <i class="fas fa-flask field-icon"></i>
+                                Total Cholesterol (mg/dL)
+                            </label>
+                            <input type="number" id="cholesterol" name="cholesterol" placeholder="e.g., 200 (optional)">
+                        </div>
+                    </div>
+
+                    <div class="submit-container">
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-brain"></i>
+                            Generate AI Health Report
+                        </button>
+                    </div>
+                </div>
+            </form>">
+                           
+                    </div>
+                </div>
+                
+               
+            
+        
+        {% if report_path %}
+        <div class="report-section">
+            <div class="report-success">
+                <i class="fas fa-check-circle"></i>
+                Health Report Generated Successfully!
+            </div>
+            <a href="{{ url_for('static', filename='reports/' + report_path) }}" target="_blank" class="download-link">
+                <i class="fas fa-download"></i>
+                Download Your Health Report (PDF)
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    </form>
+        </div>
+</body>
+</html>

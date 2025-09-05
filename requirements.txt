@@ -1,0 +1,17 @@
+Flask
+openai
+python-dotenv
+textblob
+opencv-python
+python-barcode
+Pillow
+qrcode
+pytesseract
+Pillow
+googlesearch-python
+pyzbar
+fpdf
+scikit-learn
+playsound
+serpapi
+
